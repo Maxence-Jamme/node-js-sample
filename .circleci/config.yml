@@ -2,22 +2,24 @@ version: 2.1
 
 jobs:
   build:
-    machine:  # Utilisation d'un environnement machine au lieu de docker exécuté dans un conteneur
-      image: ubuntu-2204:current  # Image Ubuntu récente avec Docker préinstallé
+    docker:
+      - image: cimg/base:stable
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Build Docker Image
           command: docker build -t mon-app:latest .
       - run:
           name: Run Container
-          command: docker run -d -p 8080:8080 --name test-container mon-app:latest
+          command: |
+            docker network create test-net
+            docker run -d --network test-net --name test-container mon-app:latest
       - run:
           name: Test if app is responding
           command: |
-            sleep 5  # Attendre que le container démarre
-            curl --fail http://localhost:8080 || exit 1
-
+            sleep 5  # Laisse le temps au conteneur de démarrer
+            curl --fail http://test-container:8080 || exit 1
 
 workflows:
   version: 2
