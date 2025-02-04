@@ -1,19 +1,20 @@
+# Utiliser une image de base officielle de Node.js
 FROM node:latest
 
 # Définir le répertoire de travail dans le conteneur
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copier uniquement package.json et package-lock.json pour optimiser le cache
+# Copier le fichier package.json et package-lock.json
 COPY package*.json ./
 
-# Installer les dépendances
+# Installer les dépendances de l'application
 RUN npm install
 
-# Copier le reste du code de l'application
+# Copier le reste des fichiers de l'application
 COPY . .
 
-# Exposer le port sur lequel l'application tourne
+# Exposer le port sur lequel l'application va tourner
 EXPOSE 8080
 
-# Définir la commande de démarrage
-CMD ["npm", "strat"]
+# Démarrer l'application
+CMD ["npm", "start"]

@@ -2,24 +2,27 @@ version: 2.1
 
 jobs:
   build:
-    machine:
-      image: ubuntu-2204:current  # VM avec Docker préinstallé
+    machine:  # Utilisation d'une machine virtuelle au lieu d'un conteneur Docker
+      image: ubuntu-2204:current  # Image Ubuntu avec Docker préinstallé
     steps:
-      - checkout  # Récupération du code source
+      - checkout  # Récupère le code du repo
       - run:
-          name: Build Docker Image
+          name: Check Docker Version
+          command: docker --version
+      - run:
+          name: Build Docker image
           command: docker build -t mon-app:latest .
-
       - run:
           name: Run Container
           command: docker run -d -p 8080:8080 --name test-container mon-app:latest
-
+      - run:
+          name: Debug - Liste des conteneurs
+          command: docker ps -a
       - run:
           name: Test if app is responding
           command: |
-            sleep 5  # Attendre que l'application démarre
+            sleep 5  # Attendre que le container démarre
             curl --fail http://127.0.0.1:8080 || exit 1
-
 
 workflows:
   version: 2
