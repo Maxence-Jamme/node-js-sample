@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 8080
 
 # Définir la commande de démarrage
-CMD ["node", "server.js"]
+CMD ["npm", "strat"]
