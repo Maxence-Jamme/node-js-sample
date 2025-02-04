@@ -26,8 +26,8 @@ jobs:
       - run:
           name: Tag and Push Image
           command: |
-            docker tag mon-app:latest mon-dockerhub-user/mon-app:latest
-            docker push mon-dockerhub-user/mon-app:latest
+            docker tag mon-app:latest "$DOCKERHUB_USERNAME"/mon-app:latest
+            docker push "$DOCKERHUB_USERNAME"/mon-app:latest
 
 workflows:
   version: 2
