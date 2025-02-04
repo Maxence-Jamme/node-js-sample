@@ -2,24 +2,25 @@ version: 2.1
 
 jobs:
   build:
-    docker:
-      - image: cimg/base:stable
+    machine:
+      image: ubuntu-2204:current  # VM avec Docker préinstallé
     steps:
-      - checkout
-      - setup_remote_docker
+      - checkout  # Récupération du code source
+
       - run:
           name: Build Docker Image
           command: docker build -t mon-app:latest .
+
       - run:
           name: Run Container
-          command: |
-            docker network create test-net
-            docker run -d --network test-net --name test-container mon-app:latest
+          command: docker run -d -p 8080:8080 --name test-container mon-app:latest
+
       - run:
           name: Test if app is responding
           command: |
-            sleep 5  # Laisse le temps au conteneur de démarrer
-            curl --fail http://test-container:8080 || exit 1
+            sleep 5  # Attendre que l'application démarre
+            curl --fail http://localhost:8080 || exit 1
+
 
 workflows:
   version: 2
