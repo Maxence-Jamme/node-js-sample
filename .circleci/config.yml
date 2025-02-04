@@ -16,13 +16,19 @@ jobs:
           name: Run Container
           command: docker run -d -p 8080:8080 --name test-container mon-app:latest
       - run:
-          name: Debug - Liste des conteneurs
-          command: docker ps -a
-      - run:
           name: Test if app is responding
           command: |
             sleep 5  # Attendre que le container démarre
             curl --fail http://127.0.0.1:8080 || exit 1
+      - run:
+          name: Login to DockerHub
+          command: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+      - run:
+          name: Tag and Push Image
+          command: |
+            docker tag mon-app:latest mon-dockerhub-user/mon-app:latest
+            docker push mon-dockerhub-user/mon-app:latest
 
 workflows:
   version: 2
