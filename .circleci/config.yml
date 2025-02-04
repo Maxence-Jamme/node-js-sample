@@ -19,7 +19,7 @@ jobs:
           name: Test if app is responding
           command: |
             sleep 5  # Attendre que l'application démarre
-            curl --fail http://localhost:8080 || exit 1
+            curl --fail http://127.0.0.1:8080 || exit 1
 
 
 workflows:
