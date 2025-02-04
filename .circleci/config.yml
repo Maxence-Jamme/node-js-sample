@@ -6,7 +6,6 @@ jobs:
       image: ubuntu-2204:current  # VM avec Docker préinstallé
     steps:
       - checkout  # Récupération du code source
-
       - run:
           name: Build Docker Image
           command: docker build -t mon-app:latest .

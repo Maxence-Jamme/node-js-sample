@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:latest
 
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
