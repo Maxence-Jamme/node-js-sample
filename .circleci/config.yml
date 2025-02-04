@@ -3,13 +3,29 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/base:stable  # Image de base pour l'exécution du job
+      - image: cimg/base:stable
     steps:
-      - checkout  # Récupère le code du repo
-      - setup_remote_docker  # Permet d'utiliser Docker dans le job
+      - checkout
+      - setup_remote_docker
       - run:
-          name: Build Docker image
-          command: docker build -t mon-image:latest .
+          name: Build Docker Image
+          command: docker build -t mon-app:latest .
+      - run:
+          name: Run Container
+          command: docker run -d -p 3000:3000 --name test-container mon-app:latest
+      - run:
+          name: Test if app is responding
+          command: |
+            sleep 5  # Attendre que le container démarre
+            curl --fail http://localhost:3000 || exit 1
+      - run:
+          name: Login to DockerHub
+          command: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Tag and Push Image
+          command: |
+            docker tag mon-app:latest mon-dockerhub-user/mon-app:latest
+            docker push mon-dockerhub-user/mon-app:latest
 
 workflows:
   version: 2
