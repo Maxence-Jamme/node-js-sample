@@ -1,33 +1,32 @@
 version: 2.1
 
+orbs:
+  docker: circleci/docker@2.4.0  # Utilisation de l'orb Docker
+
 jobs:
   build:
-    machine:  # Utilisation d'une machine virtuelle au lieu d'un conteneur Docker
-      image: ubuntu-2204:current  # Image Ubuntu avec Docker préinstallé
+    machine:  
+      image: ubuntu-2204:current  # VM avec Docker préinstallé
     steps:
-      - checkout  # Récupère le code du repo
-      - run:
-          name: Check Docker Version
-          command: docker --version
-      - run:
-          name: Build Docker image
-          command: docker build -t mon-app:latest .
+      - checkout  # Récupération du code source
+
+      - docker/build:  
+          image: "$DOCKERHUB_USERNAME/mon-app"  
+          tag: "latest"  
+
       - run:
           name: Run Container
-          command: docker run -d -p 8080:8080 --name test-container mon-app:latest
+          command: docker run -d -p 8080:8080 --name test-container "$DOCKERHUB_USERNAME/mon-app:latest"
+
       - run:
           name: Test if app is responding
           command: |
             sleep 5  # Attendre que le container démarre
             curl --fail http://127.0.0.1:8080 || exit 1
-      - run:
-          name: Login to DockerHub
-          command: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-      - run:
-          name: Tag and Push Image
-          command: |
-            docker tag mon-app:latest "$DOCKERHUB_USERNAME"/mon-app:latest
-            docker push "$DOCKERHUB_USERNAME"/mon-app:latest
+
+      - docker/push:
+          image: "$DOCKERHUB_USERNAME/mon-app"
+          tag: "latest"
 
 workflows:
   version: 2
